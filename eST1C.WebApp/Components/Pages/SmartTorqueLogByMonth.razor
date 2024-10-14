@@ -1,0 +1,54 @@
+﻿@page "/smarttorque-log-by-month"
+@using eST1C.WebApp.Service
+@inject eST1C.WebApp.Service.LogDataService LogDataService
+
+<h3>Number of Smart Torque Log File Recorded by Month</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>PC Name / Station</th>
+            @foreach (var month in months)
+            {
+                <th>@month</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (logs != null && logs.Any())
+        {
+            @foreach (var log in logs)
+            {
+                <tr>
+                    <td>@log.PCName</td>
+                    @foreach (var month in months)
+                    {
+                        <td>@(log.MonthlyCounts.ContainsKey(month) ? log.MonthlyCounts[month] : 0)</td>
+                    }
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="13">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<LogDataService.MonthlyLogDataDTO> logs = new List<LogDataService.MonthlyLogDataDTO>();
+    private List<string> months = new List<string>
+    {
+        "Oct 2024", "Sep 2024", "Aug 2024", "Jul 2024", "Jun 2024", 
+        "May 2024", "Apr 2024", "Mar 2024", "Feb 2024", "Jan 2024", 
+        "Dec 2023", "Nov 2023", "Oct 2023"  // Example months for the table header
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch data when the component initializes
+        logs = await LogDataService.GetMonthlyLogDataAsync();
+    }
+}

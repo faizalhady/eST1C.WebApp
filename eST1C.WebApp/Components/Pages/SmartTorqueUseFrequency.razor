@@ -1,0 +1,58 @@
+﻿@page "/smarttorque-use-frequency"
+@using eST1C.WebApp.Service;
+@inject eST1C.WebApp.Service.LogDataService LogDataService
+
+<h3>Number of Smart Torque Log File Recorded</h3>
+
+@* <label>Select by Week or Month</label>
+<select @onchange="HandleSelectChange">
+    <option value="week">Week</option>
+    <option value="month">Month</option>
+</select>
+
+<p>Week</p>
+<input type="text" placeholder="YYYY-WW" @bind="selectedWeek" /> *@
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>PC Name / Station</th>
+            <th>Frequency Used</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (logs != null && logs.Any())
+        {
+            @foreach (var log in logs)
+            {
+                <tr>
+                    <td>@log.PCName</td>
+                    <td>@log.FrequencyUsed</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<LogDataService.LogDataDTO> logs = new List<LogDataService.LogDataDTO>(); // Initialize with an empty list
+    private string selectedWeek;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch data when the component initializes
+        logs = await LogDataService.GetLogDataAsync();
+    }
+
+    private void HandleSelectChange(ChangeEventArgs e)
+    {
+        // Logic to handle week or month selection (you can expand this)
+        var selectedOption = e.Value.ToString();
+    }
+}
