@@ -137,5 +137,24 @@ namespace eST1C.WebApp.Service
                     .ToList()
                 );
         }
+        public async Task<List<LogDataDTO>> GetLogDataByDayAsync(DateTime day)
+        {
+            // Define the start and end of the selected day (midnight to the end of the day)
+            var startOfDay = day.Date;
+            var endOfDay = startOfDay.AddDays(1);  // End of the day (exclusive)
+
+            // Fetch logs where the timestamp falls within the selected day range
+            return await _context.LogData
+                .Where(log => log.Timestamp >= startOfDay && log.Timestamp < endOfDay)
+                .GroupBy(log => log.PCName)
+                .Select(group => new LogDataDTO
+                {
+                    PCName = group.Key,
+                    FrequencyUsed = group.Count()
+                })
+                .ToListAsync();
+        }
+
+
     }
 }
