@@ -1,20 +1,55 @@
 ﻿@page "/smarttorque-use-frequency"
 @using eST1C.WebApp.Service;
 @inject eST1C.WebApp.Service.LogDataService LogDataService
+@rendermode InteractiveServer
 
-<h3>Number of Smart Torque Log File Recorded</h3>
+<h3 class="mb-4">Number of Smart Torque Log File Recorded</h3>
 
-@* <label>Select by Week or Month</label>
-<select @onchange="HandleSelectChange">
-    <option value="week">Week</option>
-    <option value="month">Month</option>
-</select>
+<div class="mb-4">
+    <label for="filter-select" class="form-label">Select by Week or Month</label>
+    <select class="form-select" id="filter-select" @onchange="HandleSelectChange">
+        <option value="week" selected="@isWeekSelected">Week</option>
+        <option value="month" selected="@(!isWeekSelected)">Month</option>
+    </select>
+</div>
 
-<p>Week</p>
-<input type="text" placeholder="YYYY-WW" @bind="selectedWeek" /> *@
+@if (isWeekSelected)
+{
+    <div class="mb-4">
+        <label for="week-select" class="form-label">Select Week</label>
+        <select class="form-select" id="week-select" @bind="selectedWeek">
+            @for (int i = 1; i <= 52; i++)
+            {
+                <option value="@i">Week @i</option>
+            }
+        </select>
+    </div>
+}
+else
+{
+    <div class="mb-4">
+        <label for="month-select" class="form-label">Select Month</label>
+        <select class="form-select" id="month-select" @bind="selectedMonth">
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+    </div>
+}
 
-<table class="table">
-    <thead>
+<button class="btn btn-primary" @onclick="ApplyFilter">Apply Filter</button>
+
+<table class="table mt-4">
+    <thead class="table-light">
         <tr>
             <th>PC Name / Station</th>
             <th>Frequency Used</th>
@@ -34,7 +69,7 @@
         else
         {
             <tr>
-                <td colspan="2">No data available</td>
+                <td colspan="2" class="text-center">No data available</td>
             </tr>
         }
     </tbody>
@@ -42,7 +77,9 @@
 
 @code {
     private List<LogDataService.LogDataDTO> logs = new List<LogDataService.LogDataDTO>(); // Initialize with an empty list
-    private string selectedWeek;
+    private int selectedWeek = 1; // Default to week 1
+    private string selectedMonth = "01"; // Default to January
+    private bool isWeekSelected = true; // Default to week
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,7 +89,28 @@
 
     private void HandleSelectChange(ChangeEventArgs e)
     {
-        // Logic to handle week or month selection (you can expand this)
         var selectedOption = e.Value.ToString();
+        isWeekSelected = selectedOption == "week";
+        
+        // Trigger UI update manually after changing the selection
+        StateHasChanged(); 
+    }
+
+    private async Task ApplyFilter()
+    {
+        if (isWeekSelected)
+        {
+            var currentYear = DateTime.Now.Year;
+            var selectedWeekString = $"{currentYear}-{selectedWeek:D2}";
+            logs = await LogDataService.GetLogDataByWeekAsync(selectedWeekString);
+        }
+        else
+        {
+            var currentYear = DateTime.Now.Year;
+            var selectedMonthString = $"{currentYear}-{selectedMonth}";
+            logs = await LogDataService.GetLogDataByMonthAsync(selectedMonthString);
+        }
+        
+        StateHasChanged();
     }
 }
