@@ -16,7 +16,6 @@ namespace eST1C.WebApp.Service
             _context = context;
         }
 
-        // Method to get all company PC counts
         public async Task<List<PCNameCountDTO>> GetPCNameCountsAsync()
         {
             var pcNameCounts = await _context.PCNameCount
