@@ -13,6 +13,8 @@ builder.Services.AddRazorComponents()
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<LogDataService>();
+builder.Services.AddScoped<PCNameCountService>();
+
 
 var app = builder.Build();
 
@@ -23,8 +25,8 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<LogDbContext>();
 
     // Fetch some data and log it to the console
-    var logData = dbContext.LogData.Take(5).ToList(); // Fetch 5 rows to check
-    foreach (var log in logData)
+    var ValidLogs = dbContext.ValidLogs.Take(5).ToList(); // Fetch 5 rows to check
+    foreach (var log in ValidLogs)
     {
         Console.WriteLine($"PC Name: {log.PCName}, Timestamp: {log.Timestamp}");
     }

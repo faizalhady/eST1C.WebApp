@@ -39,7 +39,7 @@ namespace eST1C.WebApp.Service
         // Method to fetch and return data from the database for the entire log history
         public async Task<List<LogDataDTO>> GetLogDataAsync()
         {
-            return await _context.LogData
+            return await _context.ValidLogs
                 .GroupBy(log => log.PCName)
                 .Select(group => new LogDataDTO
                 {
@@ -63,7 +63,7 @@ namespace eST1C.WebApp.Service
             var endOfWeek = startOfWeek.AddDays(7);
 
             // Fetch logs where the timestamp falls within the given week range
-            return await _context.LogData
+            return await _context.ValidLogs
                 .Where(log => log.Timestamp >= startOfWeek && log.Timestamp < endOfWeek)
                 .GroupBy(log => log.PCName)
                 .Select(group => new LogDataDTO
@@ -87,7 +87,7 @@ namespace eST1C.WebApp.Service
             var endOfMonth = startOfMonth.AddMonths(1);
 
             // Fetch logs where the timestamp falls within the given month range
-            return await _context.LogData
+            return await _context.ValidLogs
                 .Where(log => log.Timestamp >= startOfMonth && log.Timestamp < endOfMonth)
                 .GroupBy(log => log.PCName)
                 .Select(group => new LogDataDTO
@@ -101,7 +101,7 @@ namespace eST1C.WebApp.Service
         // Method to fetch the most recent log for each PC
         public async Task<List<LastUsedLogDTO>> GetLastUsedLogsAsync()
         {
-            return await _context.LogData
+            return await _context.ValidLogs
                 .GroupBy(log => log.PCName)
                 .Select(group => new LastUsedLogDTO
                 {
@@ -114,7 +114,7 @@ namespace eST1C.WebApp.Service
         // Method to fetch logs grouped by month
         public async Task<List<MonthlyLogDataDTO>> GetMonthlyLogDataAsync()
         {
-            return await _context.LogData
+            return await _context.ValidLogs
                 .GroupBy(log => new { log.PCName, log.Timestamp.Year, log.Timestamp.Month })
                 .Select(group => new
                 {
@@ -144,7 +144,7 @@ namespace eST1C.WebApp.Service
             var endOfDay = startOfDay.AddDays(1);  // End of the day (exclusive)
 
             // Fetch logs where the timestamp falls within the selected day range
-            return await _context.LogData
+            return await _context.ValidLogs
                 .Where(log => log.Timestamp >= startOfDay && log.Timestamp < endOfDay)
                 .GroupBy(log => log.PCName)
                 .Select(group => new LogDataDTO
