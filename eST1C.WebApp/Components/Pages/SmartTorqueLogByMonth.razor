@@ -1,10 +1,64 @@
 ﻿@page "/smarttorque-log-by-month"
-@using eST1C.WebApp.Service
+@using eST1C.WebApp.Service;
 @inject eST1C.WebApp.Service.LogDataService LogDataService
+@rendermode InteractiveServer
 
-<h3>Number of Smart Torque Log File Recorded by Month</h3>
+<h3 class="mb-4">Number of Smart Torque Log File Recorded by Month</h3>
 
-<table class="table">
+<!-- Filter UI Start -->
+<div class="mb-4">
+    <label for="filter-select" class="form-label">Select by Date, Week, or Month</label>
+    <select class="form-select" id="filter-select" @onchange="HandleSelectChange">
+        <option value="day" selected="@isDaySelected">Date</option>
+        <option value="week" selected="@isWeekSelected">Week</option>
+        <option value="month" selected="@isMonthSelected">Month</option>
+    </select>
+</div>
+
+@if (isDaySelected)
+{
+    <div class="mb-4 row">
+        <div class="col-md-3">
+            <label for="from-date" class="form-label">From</label>
+            <input type="date" class="form-control" id="from-date" @bind="fromDate" />
+        </div>
+        <div class="col-md-3">
+            <label for="to-date" class="form-label">To</label>
+            <input type="date" class="form-control" id="to-date" @bind="toDate" min="@fromDate.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+}
+else if (isWeekSelected)
+{
+    <div class="mb-4 row">
+        <div class="col-md-3">
+            <label for="from-week" class="form-label">From </label>
+            <input type="week" class="form-control" id="from-week" @bind="fromWeek" />
+        </div>
+        <div class="col-md-3">
+            <label for="to-week" class="form-label">To </label>
+            <input type="week" class="form-control" id="to-week" @bind="toWeek" min="@fromWeek" />
+        </div>
+    </div>
+}
+else if (isMonthSelected)
+{
+    <div class="mb-4 row">
+        <div class="col-md-3">
+            <label for="from-month" class="form-label">From</label>
+            <input type="month" class="form-control" id="from-month" @bind="fromMonth" />
+        </div>
+        <div class="col-md-3">
+            <label for="to-month" class="form-label">To</label>
+            <input type="month" class="form-control" id="to-month" @bind="toMonth" min="@fromMonth.ToString("yyyy-MM")" />
+        </div>
+    </div>
+}
+
+<button class="btn btn-primary" @onclick="ApplyFilter">Apply Filter</button>
+<!-- Filter UI End -->
+
+<table class="table mt-4">
     <thead>
         <tr>
             <th>PC Name / Station</th>
@@ -31,7 +85,7 @@
         else
         {
             <tr>
-                <td colspan="13">No data available</td>
+                <td colspan="13" class="text-center">No data available</td>
             </tr>
         }
     </tbody>
@@ -46,9 +100,37 @@
         "Dec 2023", "Nov 2023", "Oct 2023"  
     };
 
-    protected override async Task OnInitializedAsync()
+    @* private int selectedWeek = 1; *@
+
+    private DateTime fromDate = DateTime.Today;
+    private DateTime toDate = DateTime.Today;
+    private DateTime fromMonth = DateTime.Today; 
+    private DateTime toMonth = DateTime.Today; 
+    private string fromWeek = DateTime.Today.ToString("yyyy-'W'ww");
+    private string toWeek = DateTime.Today.ToString("yyyy-'W'ww");
+
+    private bool isWeekSelected = false;
+    private bool isMonthSelected = false;
+    private bool isDaySelected = true; // Set day filter as default
+
+    protected override void OnInitialized()
     {
-        // Fetch data when the component initializes
-        logs = await LogDataService.GetMonthlyLogDataAsync();
+        // Set the default to "Date" to show the date pickers on initial load
+        isDaySelected = true;
+    }
+
+    private void HandleSelectChange(ChangeEventArgs e)
+    {
+        var selectedOption = e.Value?.ToString();
+        isDaySelected = selectedOption == "day";
+        isWeekSelected = selectedOption == "week";
+        isMonthSelected = selectedOption == "month";
+
+        StateHasChanged(); // Trigger a UI update
+    }
+
+    private void ApplyFilter()
+    {
+        // Placeholder for filter logic
     }
 }

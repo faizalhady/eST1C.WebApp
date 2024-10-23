@@ -102,7 +102,7 @@ else if (isDaySelected)
 
     private void HandleSelectChange(ChangeEventArgs e)
     {
-        var selectedOption = e.Value.ToString();
+        var selectedOption = e.Value?.ToString();
         isWeekSelected = selectedOption == "week";
         isMonthSelected = selectedOption == "month";
         isDaySelected = selectedOption == "day";
