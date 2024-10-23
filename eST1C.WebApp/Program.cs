@@ -25,11 +25,11 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<LogDbContext>();
 
     // Fetch some data and log it to the console
-    var ValidLogs = dbContext.ValidLogs.Take(5).ToList(); // Fetch 5 rows to check
-    foreach (var log in ValidLogs)
-    {
-        Console.WriteLine($"PC Name: {log.PCName}, Timestamp: {log.Timestamp}");
-    }
+    // var ValidLogs = dbContext.ValidLogs.Take(5).ToList(); // Fetch 5 rows to check
+    // foreach (var log in ValidLogs)
+    // {
+    //     // Console.WriteLine($"PC Name: {log.PCName}, Timestamp: {log.Timestamp}");
+    // }
 }
 
 
@@ -42,7 +42,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();

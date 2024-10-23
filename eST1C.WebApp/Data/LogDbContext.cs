@@ -16,13 +16,13 @@ namespace eST1C.WebApp.Data
     public class ValidLogs
     {
         public int Id { get; set; } 
-        public string PCName { get; set; }
+        public string? PCName { get; set; }
         public DateTime Timestamp { get; set; }
     }
     public class PCNameCount
     {
         public int Id { get; set; } 
-        public string CompanyName { get; set; }
+        public string? CompanyName { get; set; }
         public int UniquePCCount { get; set; }
     }
 }
