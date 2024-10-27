@@ -1,0 +1,61 @@
+﻿@page "/"
+@using eST1C.WebApp.Service
+@inject eST1C.WebApp.Service.PCNameCountService PCNameCountService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@using eST1C.WebApp.DTO
+
+@inject PCNameCountService PCNameCountService
+
+<h3 class="mb-4">Total Number of Smart Torque / Station</h3>
+
+<div class="row">
+    @if (companyPCCounts != null && companyPCCounts.Any())
+    {
+        @foreach (var company in companyPCCounts)
+        {
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card text-center shadow-sm h-100" @onclick="() => NavParam(company.CompanyName)" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">@company.CompanyName</h5>
+                        <p class="card-text fs-1 text-primary">@company.UniquePCCount</p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else if (companyPCCounts == null)
+    {
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                Loading data...
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-warning" role="alert">
+                No data available.
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<PCNameCountDTO>? companyPCCounts;
+
+        
+
+         private void NavParam(string companyName)
+    {
+        NavigationManager.NavigateTo($"/quick-link/{companyName}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch data using the service
+        companyPCCounts = await PCNameCountService.GetPCNameCountsAsync();
+    }
+}

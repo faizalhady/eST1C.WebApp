@@ -1,0 +1,48 @@
+﻿@page "/smarttorque-last-used/{companyName}"
+@using eST1C.WebApp.Service
+@inject eST1C.WebApp.Service.LogDataService LogDataService
+<div class="mb-4">
+
+</div>
+@* <h3>PC Name / Station - Last Used<span class="text-primary">@companyName</span></h3> *@
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>PC Name / Station</th>
+            <th>Last Used</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (logs != null && logs.Any())
+        {
+            @foreach (var log in logs)
+            {
+                <tr>
+                    <td>@log.PCName</td>
+                    <td>@log.LastUsed.ToString("g")</td> <!-- Formats DateTime to a general date/time pattern -->
+                </tr>
+            }
+            
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public string? companyName { get; set; }
+
+        private List<LogDataService.LastUsedLogDTO> logs = new List<LogDataService.LastUsedLogDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch data when the component initializes
+        logs = await LogDataService.GetLastUsedLogsAsync(companyName);
+    }
+}

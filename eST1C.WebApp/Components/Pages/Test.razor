@@ -1,0 +1,135 @@
+﻿@page "/smarttorque-use-frequency"
+@using eST1C.WebApp.Service;
+@inject eST1C.WebApp.Service.LogDataService LogDataService
+@rendermode InteractiveServer
+
+<h3 class="mb-4">Number of Smart Torque Log File Recorded</h3>
+
+<div class="mb-4">
+    <label for="filter-select" class="form-label">Select by Week, Month, or Day</label>
+    <select class="form-select" id="filter-select" @onchange="HandleSelectChange">
+        <option value="week" selected="@isWeekSelected">Week</option>
+        <option value="month" selected="@isMonthSelected">Month</option>
+        <option value="day" selected="@isDaySelected">Day</option>
+    </select>
+</div>
+
+@if (isWeekSelected)
+{
+    <div class="mb-4">
+        <label for="week-select" class="form-label">Select Week</label>
+        <select class="form-select" id="week-select" @bind="selectedWeek">
+            @for (int i = 1; i <= 52; i++)
+            {
+                <option value="@i">Week @i</option>
+            }
+        </select>
+    </div>
+}
+else if (isMonthSelected)
+{
+    <div class="mb-4">
+        <label for="month-select" class="form-label">Select Month</label>
+        <select class="form-select" id="month-select" @bind="selectedMonth">
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+    </div>
+}
+else if (isDaySelected)
+{
+    <div class="mb-4 row">
+        <div class="col-md-3"> <!-- Adjust the column size as needed -->
+            <label for="day-select" class="form-label">Select Day</label>
+            <input type="date" class="form-control" id="day-select" @bind="selectedDate" />
+        </div>
+    </div>
+}
+
+<button class="btn btn-primary" @onclick="ApplyFilter">Apply Filter</button>
+
+<table class="table mt-4">
+    <thead class="table-light">
+        <tr>
+            <th>PC Name / Station</th>
+            <th>Frequency Used</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (logs != null && logs.Any())
+        {
+            @foreach (var log in logs)
+            {
+                <tr>
+                    <td>@log.PCName</td>
+                    <td>@log.FrequencyUsed</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2" class="text-center">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<LogDataService.LogDataDTO> logs = new List<LogDataService.LogDataDTO>(); // Initialize with an empty list
+    private int selectedWeek = 1; // Default to week 1
+    private string selectedMonth = "01"; // Default to January
+    private DateTime selectedDate = DateTime.Today; // Default to today
+    private bool isWeekSelected = true; // Default to week
+    private bool isMonthSelected = false;
+    private bool isDaySelected = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch data when the component initializes
+        logs = await LogDataService.GetLogDataAsync();
+    }
+
+    private void HandleSelectChange(ChangeEventArgs e)
+    {
+        var selectedOption = e.Value?.ToString();
+        isWeekSelected = selectedOption == "week";
+        isMonthSelected = selectedOption == "month";
+        isDaySelected = selectedOption == "day";
+
+        // Trigger UI update manually after changing the selection
+        StateHasChanged();
+    }
+
+    private async Task ApplyFilter()
+    {
+        if (isWeekSelected)
+        {
+            var currentYear = DateTime.Now.Year;
+            var selectedWeekString = $"{currentYear}-{selectedWeek:D2}";
+            logs = await LogDataService.GetLogDataByWeekAsync(selectedWeekString);
+        }
+        else if (isMonthSelected)
+        {
+            var currentYear = DateTime.Now.Year;
+            var selectedMonthString = $"{currentYear}-{selectedMonth}";
+            logs = await LogDataService.GetLogDataByMonthAsync(selectedMonthString);
+        }
+        else if (isDaySelected)
+        {
+            logs = await LogDataService.GetLogDataByDayAsync(selectedDate); // Pass DateTime directly
+        }
+
+        StateHasChanged();
+    }
+}
