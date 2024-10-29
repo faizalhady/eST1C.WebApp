@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\3421795\\source\\repos\\faizalhady\\eST1C.WebApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2BF4DF94-5E9D-4F74-A092-739C8921D493}|eST1C.WebApp\\eST1C.WebApp.csproj|c:\\users\\3421795\\source\\repos\\faizalhady\\est1c.webapp\\est1c.webapp\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2BF4DF94-5E9D-4F74-A092-739C8921D493}|eST1C.WebApp\\eST1C.WebApp.csproj|solutionrelative:est1c.webapp\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2BF4DF94-5E9D-4F74-A092-739C8921D493}|eST1C.WebApp\\eST1C.WebApp.csproj|c:\\users\\3421795\\source\\repos\\faizalhady\\est1c.webapp\\est1c.webapp\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2BF4DF94-5E9D-4F74-A092-739C8921D493}|eST1C.WebApp\\eST1C.WebApp.csproj|solutionrelative:est1c.webapp\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\3421795\\source\\repos\\faizalhady\\eST1C.WebApp\\eST1C.WebApp\\appsettings.json",
+              "RelativeDocumentMoniker": "eST1C.WebApp\\appsettings.json",
+              "ToolTip": "C:\\Users\\3421795\\source\\repos\\faizalhady\\eST1C.WebApp\\eST1C.WebApp\\appsettings.json",
+              "RelativeToolTip": "eST1C.WebApp\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-10-29T06:30:00.833Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\3421795\\source\\repos\\faizalhady\\eST1C.WebApp\\eST1C.WebApp\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "eST1C.WebApp\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\3421795\\source\\repos\\faizalhady\\eST1C.WebApp\\eST1C.WebApp\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "eST1C.WebApp\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-29T01:46:53.274Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
