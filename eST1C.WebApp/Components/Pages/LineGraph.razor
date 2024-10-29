@@ -36,11 +36,11 @@
 else if (isWeekSelected)
 {
     <div class="mb-4 row">
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="from-week" class="form-label">From</label>
             <input type="week" class="form-control" id="from-week" @bind="fromWeek" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="to-week" class="form-label">To</label>
             <input type="week" class="form-control" id="to-week" @bind="toWeek" min="@fromWeek" max="@GetMaxToWeek()" />
         </div>
@@ -48,12 +48,12 @@ else if (isWeekSelected)
 }
 else if (isMonthSelected)
 {
-    <div class="mb-4 row">
-        <div class="col-md-3">
+    <div class="mb-4 row" >
+        <div class="col-md-3" style="width: 200px;">
             <label for="from-month" class="form-label">From</label>
             <input type="month" class="form-control" id="from-month" @bind="fromMonth" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="to-month" class="form-label">To</label>
             <input type="month" class="form-control" id="to-month" @bind="toMonth" min="@fromMonth.ToString("yyyy-MM")"
                 max="@GetMaxToMonth()" />
