@@ -42,6 +42,6 @@
     {
         logs = await LogDataService.GetLastUsedLogsAsync(companyName);
 
-        logs = logs.OrderByDescending(log => log.LastUsed).ToList();
+        logs = logs.OrderByDescending(log => log.LastUsed).ToList(); //////
     }
 }

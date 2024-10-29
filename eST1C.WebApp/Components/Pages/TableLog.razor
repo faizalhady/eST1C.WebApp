@@ -1,8 +1,7 @@
 ﻿@page "/smarttorque-log/{companyName}"
 @using eST1C.WebApp.Service
-@inject LogServices LogServices
 @using System.Globalization
-
+@inject LogServices LogServices
 @inject NavigationManager NavigationManager
 
 @rendermode InteractiveServer
@@ -10,12 +9,12 @@
 <h3 class="mb-4">Smart Torque Log File Records for <span class="text-primary">@companyName</span></h3>
 
 <!-- Filter UI Start -->
-<div class="mb-4"style="width: 377px;" >
+<div class="mb-4" style="width: 377px;">
     <label for="filter-select" class="form-label">Select by Date, Week, or Month</label>
-    <select class="form-select" id="filter-select" @onchange="HandleSelectChange" >
+    <select class="form-select" id="filter-select" @onchange="HandleSelectChange">
         <option value="day" selected="@isDaySelected">Date</option>
         <option value="week" selected="@isWeekSelected">Week</option>
-        <option value="month" selected="@isMonthSelected">Month</option>-
+        <option value="month" selected="@isMonthSelected">Month</option>
     </select>
 </div>
 
@@ -36,11 +35,11 @@
 else if (isWeekSelected)
 {
     <div class="mb-4 row">
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="from-week" class="form-label">From</label>
             <input type="week" class="form-control" id="from-week" @bind="fromWeek" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="to-week" class="form-label">To</label>
             <input type="week" class="form-control" id="to-week" @bind="toWeek" min="@fromWeek" max="@GetMaxToWeek()" />
         </div>
@@ -49,11 +48,11 @@ else if (isWeekSelected)
 else if (isMonthSelected)
 {
     <div class="mb-4 row">
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="from-month" class="form-label">From</label>
             <input type="month" class="form-control" id="from-month" @bind="fromMonth" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 200px;">
             <label for="to-month" class="form-label">To</label>
             <input type="month" class="form-control" id="to-month" @bind="toMonth" min="@fromMonth.ToString("yyyy-MM")"
                 max="@GetMaxToMonth()" />
@@ -63,92 +62,74 @@ else if (isMonthSelected)
 
 <button class="btn btn-primary mb-3" style="width: 377px;" @onclick="ApplyFilter">Apply Filter</button>
 
-@if (!isFilterApplied)
+@if (isFilterApplied && (logs == null || !logs.Any()))
 {
-   
-}
-else if (logs == null || !logs.Any())
-{
-    <!-- Display only after filter is applied and no logs are found -->
     <p class="text-danger">No data available.</p>
 }
-else
+else if (isFilterApplied && logs != null && logs.Any())
 {
-
-<!-- Scrollable Table Container -->
-<div style="max-width: 1200px;">
-<div  style="overflow-x: auto;">
-    <table class="table table-bordered table-hover ">
-        <thead class="table-light">
-            <tr>
-                <th>PC Name / Station</th>
-                @if (appliedFilterType == "week")
-                {
-                    @foreach (var date in dateRange)
-                    {
-                        var weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
-                        date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                        <th>@($"Week {weekNumber} ({date.Year})")</th>
-                    }
-                }
-                else if (appliedFilterType == "day")
-                {
-                    @foreach (var date in dateRange)
-                    {
-                        <th>@date.ToString("MM/dd/yyyy")</th> <!-- Display full date -->
-                    }
-                }
-                else if (appliedFilterType == "month")
-                {
-                    @foreach (var date in dateRange)
-                    {
-                        <th>@date.ToString("MM/yyyy")</th>
-                    }
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @if (logs != null && logs.Any())
-            {
-                @foreach (var log in logs)
-                {
+    <div style="max-width: 1200px;">
+        <div style="overflow-x: auto;">
+            <table class="table table-bordered table-hover ">
+                <thead class="table-light">
                     <tr>
-                        <td>@log.PCName</td>
-                        @foreach (var date in dateRange)
+                        <th>PC Name / Station</th>
+                        @if (appliedFilterType == "week")
                         {
-                            <td>@(log.DailyLogs.TryGetValue(date, out var count) ? count : 0)</td>
+                            @foreach (var date in dateRange)
+                            {
+                                var weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+                                date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                                <th>@($"Week {weekNumber} ({date.Year})")</th>
+                            }
+                        }
+                        else if (appliedFilterType == "day")
+                        {
+                            @foreach (var date in dateRange)
+                            {
+                                <th>@date.ToString("MM/dd/yyyy")</th> <!-- Display full date -->
+                            }
+                        }
+                        else if (appliedFilterType == "month")
+                        {
+                            @foreach (var date in dateRange)
+                            {
+                                <th>@date.ToString("MM/yyyy")</th>
+                            }
                         }
                     </tr>
-                }
-                <tr>
-                    <td><strong>TOTAL</strong></td>
-                    @foreach (var date in dateRange)
+                </thead>
+                <tbody>
+                    @foreach (var log in logs)
                     {
-                        <td><strong>@(GetColumnTotals(logs)[date])</strong></td>
+                        <tr>
+                            <td>@log.PCName</td>
+                            @foreach (var date in dateRange)
+                            {
+                                <td>@(log.DailyLogs.TryGetValue(date, out var count) ? count : 0)</td>
+                            }
+                        </tr>
                     }
-                </tr>
-                <tr>
-                    <td colspan="@(dateRange.Count + 1)" class=""><strong>GRAND TOTAL: @grandTotal</strong></td>
-                </tr>
-            }
-            else
-            {
-                <tr>
-                    <td colspan="@(dateRange.Count + 1)" class="text-center">No data available</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-</div>
+                    <tr>
+                        <td><strong>TOTAL</strong></td>
+                        @foreach (var date in dateRange)
+                        {
+                            <td><strong>@(GetColumnTotals(logs)[date])</strong></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td colspan="@(dateRange.Count + 1)" class=""><strong>GRAND TOTAL: @grandTotal</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
-
-@* <SmartTorqueLastUsed companyName="@companyName" /> *@
 
 @code {
     [Parameter]
     public string? companyName { get; set; }
-     private bool isFilterApplied = false; // Indicates if filtering has been applied
+    private bool isFilterApplied = false;
 
     private List<LogServices.LogDataDTO> logs = new List<LogServices.LogDataDTO>();
     private List<DateTime> dateRange = new List<DateTime>();
@@ -163,8 +144,6 @@ else
     private bool isDaySelected = true;
     private bool isWeekSelected = false;
     private bool isMonthSelected = false;
-
-    // Track the currently applied filter type
     private string appliedFilterType = "day";
 
     private string GetMaxToDate() => fromDate.AddDays(30).ToString("yyyy-MM-dd");
@@ -179,43 +158,42 @@ else
 
     private async Task ApplyFilter()
     {
-        // Set the applied filter type
         if (isDaySelected) appliedFilterType = "day";
         else if (isWeekSelected) appliedFilterType = "week";
         else if (isMonthSelected) appliedFilterType = "month";
 
         if (isDaySelected)
         {
-            dateRange = Enumerable.Range(0, (toDate - fromDate).Days + 1).Select(offset => fromDate.AddDays(offset)).ToList();
+            dateRange = Enumerable.Range(0, (toDate - fromDate).Days + 1)
+                                  .Select(offset => fromDate.AddDays(offset))
+                                  .ToList();
             logs = await LogServices.GetLogDataByDateRangeAsync(fromDate, toDate, companyName ?? string.Empty);
         }
         else if (isWeekSelected)
         {
-            DateTime fromWeekDate = GetFirstDateOfWeekISO8601(ParseWeekToDateTime(fromWeek));
-            DateTime toWeekDate = GetFirstDateOfWeekISO8601(ParseWeekToDateTime(toWeek));
+            DateTime fromWeekDate = ParseWeekToDateTime(fromWeek);
+            DateTime toWeekDate = ParseWeekToDateTime(toWeek);
 
-            dateRange = Enumerable.Range(0, (toWeekDate - fromWeekDate).Days / 7 + 1)
-            .Select(offset => fromWeekDate.AddDays(offset * 7)).ToList();
+            dateRange = Enumerable.Range(0, ((toWeekDate - fromWeekDate).Days / 7) + 1)
+                                  .Select(offset => fromWeekDate.AddDays(offset * 7))
+                                  .ToList();
 
-            // Adjust to match the exact week range selected
-            if (dateRange.Count > 0 && dateRange[0] != ParseWeekToDateTime(fromWeek))
-            {
-                dateRange[0] = ParseWeekToDateTime(fromWeek);
-            }
-
+            logs = await LogServices.GetLogDataByWeekRangeAsync(fromWeekDate, toWeekDate, companyName ?? string.Empty);
         }
         else if (isMonthSelected)
         {
             dateRange = Enumerable.Range(0, ((toMonth.Year - fromMonth.Year) * 12) + toMonth.Month - fromMonth.Month + 1)
-            .Select(offset => fromMonth.AddMonths(offset)).ToList();
+                                  .Select(offset => fromMonth.AddMonths(offset))
+                                  .ToList();
             logs = await LogServices.GetLogDataByMonthRangeAsync(fromMonth, toMonth, companyName ?? string.Empty);
         }
-         if (logs == null || !logs.Any())
-    {
-        Console.WriteLine("No logs found for the selected range."); // Debugging purpose
-    }
-    isFilterApplied = true; 
 
+        if (logs == null || !logs.Any())
+        {
+            Console.WriteLine("No logs found for the selected range.");
+        }
+
+        isFilterApplied = true;
         logs = TransformToDailyLogs(logs);
         grandTotal = GetGrandTotal(logs);
 
@@ -256,7 +234,6 @@ else
             int daysOffset = DayOfWeek.Monday - jan1.DayOfWeek;
             var firstWeekStart = jan1.AddDays(daysOffset);
 
-            // Ensure the week starts correctly
             if (daysOffset > 0) firstWeekStart = firstWeekStart.AddDays(7);
 
             return firstWeekStart.AddDays((weekNumber - 1) * 7);
@@ -266,7 +243,6 @@ else
             return DateTime.Today;
         }
     }
-
 
     private DateTime GetFirstDateOfWeekISO8601(DateTime date)
     {
@@ -291,10 +267,4 @@ else
     {
         return logData.Sum(log => log.DailyLogs.Values.Sum());
     }
-
-
-    void ButtonClicked()
-  {
-    // Handle the Click event of RadzenButton
-  }
 }
