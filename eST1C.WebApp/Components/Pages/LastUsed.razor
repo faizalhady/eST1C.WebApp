@@ -1,10 +1,9 @@
 ﻿@page "/smarttorque-last-used/{companyName}"
 @using eST1C.WebApp.Service
 @inject eST1C.WebApp.Service.LogDataService LogDataService
-<div class="mb-4">
 
+<div class="mb-4">
 </div>
-@* <h3>PC Name / Station - Last Used<span class="text-primary">@companyName</span></h3> *@
 
 <table class="table">
     <thead>
@@ -20,10 +19,9 @@
             {
                 <tr>
                     <td>@log.PCName</td>
-                    <td>@log.LastUsed.ToString("g")</td> <!-- Formats DateTime to a general date/time pattern -->
+                    <td>@log.LastUsed.ToString("g")</td> 
                 </tr>
             }
-            
         }
         else
         {
@@ -38,11 +36,12 @@
     [Parameter]
     public string? companyName { get; set; }
 
-        private List<LogDataService.LastUsedLogDTO> logs = new List<LogDataService.LastUsedLogDTO>();
+    private List<LogDataService.LastUsedLogDTO> logs = new List<LogDataService.LastUsedLogDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        // Fetch data when the component initializes
         logs = await LogDataService.GetLastUsedLogsAsync(companyName);
+
+        logs = logs.OrderByDescending(log => log.LastUsed).ToList();
     }
 }
