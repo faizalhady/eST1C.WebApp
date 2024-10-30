@@ -11,6 +11,8 @@ namespace eST1C.WebApp.Data
 
         public DbSet<ValidLogs> ValidLogs { get; set; }
         public DbSet<PCNameCount> PCNameCount { get; set; }
+        public DbSet<LastUsedLog> LastUsed { get; set; }
+        
     }
 
     public class ValidLogs
@@ -25,5 +27,13 @@ namespace eST1C.WebApp.Data
         public int Id { get; set; } 
         public string? CompanyName { get; set; }
         public int UniquePCCount { get; set; }
+    }
+    public class LastUsedLog
+    {
+        public int Id { get; set; } 
+        public string? Workcell { get; set; }
+        public string? PCName { get; set; }
+        
+        public DateTime LastUsed { get; set; }
     }
 }

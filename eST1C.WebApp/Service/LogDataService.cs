@@ -29,6 +29,7 @@ namespace eST1C.WebApp.Service
         {
             public string? PCName { get; set; } // Nullable PCName
             public DateTime LastUsed { get; set; }
+
         }
 
         public class MonthlyLogDataDTO
@@ -36,6 +37,22 @@ namespace eST1C.WebApp.Service
             public string? PCName { get; set; } // Nullable PCName
             public Dictionary<string, int> MonthlyCounts { get; set; } = new(); // Initialize dictionary
         }
+        public async Task<DateTime?> GetLastUsedDateAsync(string companyName)
+        {
+            return await _context.ValidLogs
+                .Where(p => p.FilePath.Contains(companyName))
+                .OrderByDescending(p => p.Timestamp)
+                .Select(p => p.Timestamp)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<DateTime?> GetMostRecentLastUsedAsync(string workcell)
+        {
+            return await _context.LastUsed
+                .Where(log => log.Workcell.Contains(workcell))
+                .MaxAsync(log => (DateTime?)log.LastUsed);
+        }
+
 
         // Method to fetch and return data from the database for the entire log history
         public async Task<List<LogDataDTO>> GetLogDataAsync()
@@ -103,27 +120,19 @@ namespace eST1C.WebApp.Service
         }
 
         // Method to fetch the most recent log for each PC
-        public async Task<List<LastUsedLogDTO>> GetLastUsedLogsAsync(string companyName)
+        public async Task<List<LastUsedLogDTO>> GetLastUsedLogsAsync(string workcell)
         {
-            return await _context.ValidLogs
-                .Where(log => log.FilePath.Contains(companyName)) // Filter by company name in the FilePath
+            return await _context.LastUsed
+                .Where(log => log.Workcell.Contains(workcell)) // Filter by Workcell
                 .GroupBy(log => log.PCName)
                 .Select(group => new LastUsedLogDTO
                 {
-                    PCName = group.Key,
-                    LastUsed = group.Max(log => log.Timestamp)
+                    PCName = group.Key, // 'group.Key' is the PCName
+                    LastUsed = group.Max(log => log.LastUsed) // Get the max LastUse for each PCName
                 })
                 .ToListAsync();
         }
 
-        public async Task<DateTime?> GetLastUsedDateAsync(string companyName)
-        {
-            return await _context.ValidLogs
-                .Where(p => p.FilePath.Contains(companyName))
-                .OrderByDescending(p => p.Timestamp)
-                .Select(p => p.Timestamp)
-                .FirstOrDefaultAsync();
-        }
 
         // Method to fetch logs grouped by month
         public async Task<List<MonthlyLogDataDTO>> GetMonthlyLogDataAsync()
