@@ -6,4 +6,6 @@ public class PCNameCountDTO
 {
     public string? CompanyName { get; set; }
     public int UniquePCCount { get; set; }
+    public DateTime? LastDateUsed { get; set; }
+
 }

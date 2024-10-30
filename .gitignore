@@ -58,3 +58,6 @@ yarn.lock
 # Ignore specific build folders if using Docker
 Dockerfile
 docker-compose.yml
+
+# Ignore vs files
+.vs/

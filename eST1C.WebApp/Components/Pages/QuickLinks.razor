@@ -23,7 +23,7 @@
     </div>
 
     <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-        <div class="card text-center shadow-sm" @onclick="NavLine" style="cursor: pointer;">
+        <div class="card text-center shadow-sm" @onclick="NavigateToLine" style="cursor: pointer;">
             <div class="card-body card-body d-flex justify-content-center align-items-center">
                 <p class="mb-0"> Line Graph</p>
             </div>
@@ -49,21 +49,21 @@
     {
         ShowLoading();
         await Task.Delay(200); // Simulate delay for testing
-        NavigationManager.NavigateTo($"/smarttorque-log/{companyName}");
+        NavigationManager.NavigateTo($"smarttorque-log/{companyName}");
     }
 
     private async Task NavigateToLine()
     {
         ShowLoading();
         await Task.Delay(200); // Simulate delay for testing
-        NavigationManager.NavigateTo($"/line-graph/{companyName}");
+        NavigationManager.NavigateTo($"line-graph/{companyName}");
     }
 
     private async Task NavigateToLast()
     {
         ShowLoading();
         await Task.Delay(500); // Simulate delay for testing
-        NavigationManager.NavigateTo($"/smarttorque-last-used/{companyName}");
+        NavigationManager.NavigateTo($"smarttorque-last-used/{companyName}");
     }
 
     private void ShowLoading()

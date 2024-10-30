@@ -116,6 +116,14 @@ namespace eST1C.WebApp.Service
                 .ToListAsync();
         }
 
+        public async Task<DateTime?> GetLastUsedDateAsync(string companyName)
+        {
+            return await _context.ValidLogs
+                .Where(p => p.FilePath.Contains(companyName))
+                .OrderByDescending(p => p.Timestamp)
+                .Select(p => p.Timestamp)
+                .FirstOrDefaultAsync();
+        }
 
         // Method to fetch logs grouped by month
         public async Task<List<MonthlyLogDataDTO>> GetMonthlyLogDataAsync()
