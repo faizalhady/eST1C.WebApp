@@ -18,11 +18,11 @@ namespace eST1C.WebApp.Service
 
         public async Task<List<PCNameCountDTO>> GetPCNameCountsAsync()
         {
-            var pcNameCounts = await _context.PCNameCount
+            var pcNameCounts = await _context.WorkcellPcCount
                 .Select(p => new PCNameCountDTO
                 {
-                    CompanyName = p.CompanyName,
-                    UniquePCCount = p.UniquePCCount
+                    Workcell = p.Workcell,
+                    PcCount = p.PcCount
                 })
                 .ToListAsync();
 

@@ -45,6 +45,20 @@ namespace eST1C.WebApp.Service
                 .Select(p => p.Timestamp)
                 .FirstOrDefaultAsync();
         }
+        public async Task<LastUsedLogDTO?> GetLatestLogAsync(string workcell)
+        {
+            return await _context.LastUsed
+                .Where(log => log.Workcell.Contains(workcell)) // Filter by Workcell
+                .OrderByDescending(log => log.LastUsed) // Order by LastUsed in descending order
+                .Select(log => new LastUsedLogDTO
+                {
+                    PCName = log.PCName,
+                    LastUsed = log.LastUsed
+                })
+                .FirstOrDefaultAsync(); // Get only the latest log entry
+        }
+
+
 
         public async Task<DateTime?> GetMostRecentLastUsedAsync(string workcell)
         {
@@ -120,18 +134,6 @@ namespace eST1C.WebApp.Service
         }
 
         // Method to fetch the most recent log for each PC
-        public async Task<List<LastUsedLogDTO>> GetLastUsedLogsAsync(string workcell)
-        {
-            return await _context.LastUsed
-                .Where(log => log.Workcell.Contains(workcell)) // Filter by Workcell
-                .GroupBy(log => log.PCName)
-                .Select(group => new LastUsedLogDTO
-                {
-                    PCName = group.Key, // 'group.Key' is the PCName
-                    LastUsed = group.Max(log => log.LastUsed) // Get the max LastUse for each PCName
-                })
-                .ToListAsync();
-        }
 
 
         // Method to fetch logs grouped by month

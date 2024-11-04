@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 @inject eST1C.WebApp.Service.LogDataService LogDataService
+@inject SettingsServices SettingsServices
 
 @using eST1C.WebApp.DTO
 
@@ -19,6 +20,7 @@
     </div>
 }
 
+
 <h3 class="mb-4">Total Number of Smart Torque / Station</h3>
 
 <div class="row">
@@ -27,14 +29,22 @@
         @foreach (var company in companyPCCounts)
         {
             <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                <div class="card text-center shadow-sm h-100" @onclick="() => NavParam(company.CompanyName)"
+                <div class="card text-center shadow-sm h-100" @onclick="() => NavParam(company.Workcell)"
                     style="cursor: pointer;">
                     <div class="card-body">
-                        <h5 class="card-title text-dark">@company.CompanyName</h5>
-                        <p class="card-text fs-1 text-primary" style="color: orange;">@company.UniquePCCount</p>
+                        <h5 class="card-title text-dark">@company.Workcell</h5>
+                        <p class="card-text fs-1 text-primary" style="color: orange;">@company.PcCount</p>
                     </div>
-                    <div class="card-footer text-body-secondary">
-                        Last Used: @GetLastUsed(company.CompanyName)
+
+                    @{
+    var lastUsedString = GetLastUsed(company.Workcell);
+    DateTime lastUsedDate;
+    var isOlderThanSixMonths = DateTime.TryParse(lastUsedString, out lastUsedDate) && lastUsedDate <= DateTime.Now.AddMonths(-inactiveThresholdMonths);
+}
+
+
+                    <div  class="card-footer text-body-secondary @(isOlderThanSixMonths ? "bg-danger text-white"  : "bg-success text-white")">
+                        Last Used: @lastUsedString
                     </div>
                 </div>
             </div>
@@ -60,39 +70,48 @@
 
 @code {
     private List<PCNameCountDTO>? companyPCCounts;
+    private int inactiveThresholdMonths = 6; 
     private List<LogDataService.LastUsedLogDTO> logs = new List<LogDataService.LastUsedLogDTO>();
     private Dictionary<string, DateTime?> lastUsedByCompany = new Dictionary<string, DateTime?>();
 
 
     private bool showLoading = false;
 
-    private async Task NavParam(string companyName)
+    private async Task NavParam(string Workcell)
     {
         ShowLoading();
         await Task.Delay(200);
-        NavigationManager.NavigateTo($"quick-link/{companyName}");
+        NavigationManager.NavigateTo($"quick-link/{Workcell}");
     }
 
     protected override async Task OnInitializedAsync()
     {
         // Fetch data using the service
         companyPCCounts = await PCNameCountService.GetPCNameCountsAsync();
+        inactiveThresholdMonths = await SettingsServices.GetInactiveThresholdAsync();
 
         foreach (var company in companyPCCounts)
         {
-            var lastUsed = await LogDataService.GetMostRecentLastUsedAsync(company.CompanyName);
-            lastUsedByCompany[company.CompanyName] = lastUsed;
+            var lastUsed = await LogDataService.GetMostRecentLastUsedAsync(company.Workcell);
+            lastUsedByCompany[company.Workcell] = lastUsed;
+            
         }
     }
 
-    private string GetLastUsed(string companyName)
+    private string GetLastUsed(string Workcell)
     {
-        if (lastUsedByCompany.TryGetValue(companyName, out var lastUsed))
+        if (lastUsedByCompany.TryGetValue(Workcell, out var lastUsed))
         {
             return lastUsed.HasValue ? lastUsed.Value.ToString("yyyy-MM-dd") : "No data available";
         }
         return "Loading...";
     }
+
+
+
+
+
+
     private void ShowLoading()
     {
         showLoading = true;

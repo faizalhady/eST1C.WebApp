@@ -2,26 +2,27 @@
 @using eST1C.WebApp.Service
 @inject eST1C.WebApp.Service.LogDataService LogDataService
 
+
+<h3 class="mb-4">Last Used Workstation <span class="text-primary">@companyName</span></h3>
 <div class="mb-4">
 </div>
 
-<table class="table">
-    <thead>
+<table class="table table-bordered table-hover ">
+    <thead class="table-light">
         <tr>
             <th>PC Name / Station</th>
             <th>Last Used</th>
         </tr>
     </thead>
     <tbody>
-        @if (logs != null && logs.Any())
+        @if (log != null)
         {
-            @foreach (var log in logs)
-            {
-                <tr>
-                    <td>@log.PCName</td>
-                    <td>@log.LastUsed.ToString("g")</td> 
-                </tr>
-            }
+
+            <tr>
+                <td>@log.PCName</td>
+                <td>@log.LastUsed.ToString("g")</td>
+            </tr>
+
         }
         else
         {
@@ -36,12 +37,11 @@
     [Parameter]
     public string? companyName { get; set; }
 
-    private List<LogDataService.LastUsedLogDTO> logs = new List<LogDataService.LastUsedLogDTO>();
-
+    @* private List<LogDataService.LastUsedLogDTO> log = new List<LogDataService.LastUsedLogDTO>(); *@
+    private LogDataService.LastUsedLogDTO? log;
     protected override async Task OnInitializedAsync()
     {
-        logs = await LogDataService.GetLastUsedLogsAsync(companyName);
+        log = await LogDataService.GetLatestLogAsync(companyName);
 
-        logs = logs.OrderByDescending(log => log.LastUsed).ToList(); //////
     }
 }

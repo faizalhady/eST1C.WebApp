@@ -1,0 +1,86 @@
+﻿@page "/history"
+@inject PcHistoryService PcHistoryService
+@using eST1C.WebApp.Data 
+@rendermode InteractiveServer
+
+<h3>PC Migration List</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                <a @onclick="@( () => SortByColumn("PCName") )">
+                    PC Name
+                    @if (sortColumn == "PCName")
+                    {
+                        <span>@(sortAscending ? "▲" : "▼")</span>
+                    }
+                </a>
+            </th>
+            <th>
+                <a  @onclick="@( () => SortByColumn("MaxMigrationStep") )">
+                    Max Migration Step
+                    @if (sortColumn == "MaxMigrationStep")
+                    {
+                        <span>@(sortAscending ? "▲" : "▼")</span>
+                    }
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (sortedMigrations != null && sortedMigrations.Any())
+        {
+            @foreach (var migration in sortedMigrations)
+            {
+                <tr>
+                    <td>@migration.PCName</td>
+                    <td>@migration.MaxMigrationStep</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<PCMigrationSummary> pcMigrations;
+    private IEnumerable<PCMigrationSummary> sortedMigrations;
+    private bool sortAscending = true;
+    private string sortColumn = "MaxMigrationStep";
+
+    protected override async Task OnInitializedAsync()
+    {
+        pcMigrations = await PcHistoryService.GetPCMigrationSummariesAsync();
+        SortData();
+    }
+
+    private void SortByColumn(string columnName)
+    {
+        if (sortColumn == columnName)
+        {
+            sortAscending = !sortAscending;  // Toggle sort direction
+        }
+        else
+        {
+            sortColumn = columnName;
+            sortAscending = true;  // Default to ascending
+        }
+        SortData();
+    }
+
+    private void SortData()
+    {
+        sortedMigrations = sortColumn switch
+        {
+            "PCName" => sortAscending ? pcMigrations.OrderBy(m => m.PCName) : pcMigrations.OrderByDescending(m => m.PCName),
+            "MaxMigrationStep" => sortAscending ? pcMigrations.OrderBy(m => m.MaxMigrationStep) : pcMigrations.OrderByDescending(m => m.MaxMigrationStep),
+            _ => pcMigrations
+        };
+    }
+}

@@ -1,0 +1,60 @@
+﻿@page "/settings"
+@using System.ComponentModel.DataAnnotations
+@using eST1C.WebApp.Service
+@inject SettingsServices SettingsServices
+@rendermode InteractiveServer
+
+
+
+<div class="card">
+  <div class="card-header">
+    <h3>Settings</h3>
+  </div>
+  <div class="card-body">
+    <div class="d-flex align-items-center">
+      <h5 class="card-title mb-0 me-3">Inactive Threshold (Months)</h5>
+      <div class="col-sm-3">
+        <InputNumber @bind-Value="inactiveThreshold" class="form-control" min="1" max="12" placeholder="@inactiveThresholdMonths" />
+        @if (!isValid)
+        {
+          <small class="text-danger">Please enter a valid number of months (1-12).</small>
+        }
+      </div>
+    </div>
+    <button @onclick="HandleSubmit" class="btn btn-primary mt-3">Update</button>
+  </div>
+</div>
+
+
+
+
+@code {
+    private int? inactiveThreshold;
+    private bool isValid = true;
+
+    private int inactiveThresholdMonths = 1; 
+
+    protected override async Task OnInitializedAsync()
+    {
+     inactiveThresholdMonths = await SettingsServices.GetInactiveThresholdAsync();   
+    }
+    private void HandleSubmit()
+    {
+        // Validate the input manually
+        if (inactiveThreshold == null || inactiveThreshold < 1 || inactiveThreshold > 12)
+        {
+            isValid = false;
+        }
+        else
+        {
+            isValid = true;
+            SettingsServices.UpdateInactiveThresholdAsync(inactiveThreshold.Value);
+        }
+    }
+
+    private void UpdateInactiveThreshold(int months)
+    {
+        // Logic to update the inactive threshold
+        Console.WriteLine($"Inactive threshold set to {months} months.");
+    }
+}

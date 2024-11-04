@@ -4,6 +4,12 @@ using eST1C.WebApp.Data;
 using eST1C.WebApp.Service;
 using Radzen.Blazor;
 using Radzen;
+using MudBlazor.Services;
+
+
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +19,15 @@ builder.Services.AddRazorComponents()
 
     builder.Services.AddDbContext<LogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+    builder.Services.AddBlazorBootstrap();
+builder.Services.AddMudServices();
 builder.Services.AddRadzenComponents();
 builder.Services.AddScoped<LogDataService>();
 builder.Services.AddScoped<PCNameCountService>();
 builder.Services.AddScoped<LogServices>();
+builder.Services.AddScoped<SettingsServices>();
+builder.Services.AddScoped<PcHistoryService>();
+
 
 
 var app = builder.Build();

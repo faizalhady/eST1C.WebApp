@@ -3,13 +3,26 @@
 
 <Loading IsVisible="@showLoading" /> <!-- Add this line for the loading spinner -->
 
-<div class="page">
+<div class="bb-page">
+    
     <main>
-        <div class="top-row">
-            <div class="col-auto">
-                <a class="link-primary" href="/"><img src="image/est1clogo_v9.png" width="150"/></a>
+
+        <div class="container-fluid p-2 border">
+            <div class="bb-top-row px-4 d-flex justify-content-between">
+                <a class="link-primary" href="/">
+                    <img src="image/est1clogo_v9.png" width="150" />
+                </a>
+                <div class="bb-top-row px-4 d-flex justify-content-end">
+
+                <a href="/history" target="_blank" class="align-self-center ml-3 p-2">History</a>
+                <a href="/settings" target="_blank" class="align-self-center ml-3 p-2">Settings</a>
+                </div>
             </div>
         </div>
+
+
+
+
 
         <article class="content px-4">
             @Body
