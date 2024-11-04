@@ -50,7 +50,7 @@ namespace eST1C.WebApp.Data
     public class PCMigrationHistory
 {
     [Key]
-    public int ID { get; set; }  // Primary Key
+    public long ID { get; set; }  // Use long for BIGINT in the database
 
     [Required]
     [StringLength(100)]
@@ -64,10 +64,12 @@ namespace eST1C.WebApp.Data
     public DateTime Timestamp { get; set; }
 
     [Required]
-    public long MigrationStep { get; set; }  // Change this from int to long
+    public long MigrationStep { get; set; }  // Use long for BIGINT in the database
 
     [StringLength(100)]
     public string PreviousWorkcell { get; set; }  // Nullable if the first entry
 }
+
+
 
 }

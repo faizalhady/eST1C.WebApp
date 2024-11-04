@@ -26,6 +26,15 @@ public class PcHistoryService
         .ToListAsync();
 }
 
+public async Task<List<PCMigrationHistory>> GetAllDataByPCNameAsync(string pcName)
+{
+    return await _context.PCMigrationHistory
+        .Where(m => m.PCName == pcName)
+        .OrderBy(m => m.MigrationStep) // Optional: Order by MigrationStep if needed
+        .ToListAsync();
+}
+
+
 
 }
 

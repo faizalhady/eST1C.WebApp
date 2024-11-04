@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+    
 
     builder.Services.AddDbContext<LogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -31,6 +32,7 @@ builder.Services.AddScoped<PcHistoryService>();
 
 
 var app = builder.Build();
+
 
 Console.WriteLine($"Connection String: {builder.Configuration.GetConnectionString("DefaultConnection")}");
 
