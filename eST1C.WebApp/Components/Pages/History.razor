@@ -1,15 +1,27 @@
 ﻿@page "/history"
 @inject PcHistoryService PcHistoryService
-@using eST1C.WebApp.Data 
+@using eST1C.WebApp.Data
 @rendermode InteractiveServer
+@inject NavigationManager NavigationManager
 
 <h3>PC Migration List</h3>
 
-<table class="table table-striped">
-    <thead>
+@if (showLoading)
+{
+    <div
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+        <div class="spinner-border text-warning" style="width: 3rem; height: 3rem; color: blueviolet;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
         <tr>
+            <th style="width: 50px;">No</th>
             <th>
-                <a @onclick="@( () => SortByColumn("PCName") )">
+                <a style="cursor: pointer;" @onclick="@( () => SortByColumn("PCName") )">
                     PC Name
                     @if (sortColumn == "PCName")
                     {
@@ -18,7 +30,7 @@
                 </a>
             </th>
             <th>
-                <a  @onclick="@( () => SortByColumn("MaxMigrationStep") )">
+                <a style="cursor: pointer;" @onclick="@( () => SortByColumn("MaxMigrationStep") )">
                     Max Migration Step
                     @if (sortColumn == "MaxMigrationStep")
                     {
@@ -31,10 +43,16 @@
     <tbody>
         @if (sortedMigrations != null && sortedMigrations.Any())
         {
-            @foreach (var migration in sortedMigrations)
+            @foreach (var (migration, index) in sortedMigrations.Select((value, i) => (value, i)))
             {
                 <tr>
-                    <td>@migration.PCName</td>
+                    <td>@(index + 1)</td> <!-- Display index + 1 as the serial number -->
+                    <td>
+                        <span class="text-primary text-decoration-underline" style="cursor: pointer;"
+                            @onclick="() => NavParam(migration.PCName)">
+                            @migration.PCName
+                        </span>
+                    </td>
                     <td>@migration.MaxMigrationStep</td>
                 </tr>
             }
@@ -42,7 +60,7 @@
         else
         {
             <tr>
-                <td colspan="2">No data available</td>
+                <td colspan="3">No data available</td>
             </tr>
         }
     </tbody>
@@ -51,6 +69,7 @@
 @code {
     private List<PCMigrationSummary> pcMigrations;
     private IEnumerable<PCMigrationSummary> sortedMigrations;
+    private bool showLoading = false;
     private bool sortAscending = true;
     private string sortColumn = "MaxMigrationStep";
 
@@ -64,12 +83,12 @@
     {
         if (sortColumn == columnName)
         {
-            sortAscending = !sortAscending;  // Toggle sort direction
+            sortAscending = !sortAscending; // Toggle sort direction
         }
         else
         {
             sortColumn = columnName;
-            sortAscending = true;  // Default to ascending
+            sortAscending = true; // Default to ascending
         }
         SortData();
     }
@@ -79,8 +98,22 @@
         sortedMigrations = sortColumn switch
         {
             "PCName" => sortAscending ? pcMigrations.OrderBy(m => m.PCName) : pcMigrations.OrderByDescending(m => m.PCName),
-            "MaxMigrationStep" => sortAscending ? pcMigrations.OrderBy(m => m.MaxMigrationStep) : pcMigrations.OrderByDescending(m => m.MaxMigrationStep),
+            "MaxMigrationStep" => sortAscending ? pcMigrations.OrderBy(m => m.MaxMigrationStep) : pcMigrations.OrderByDescending(m
+            => m.MaxMigrationStep),
             _ => pcMigrations
         };
+    }
+
+    private async Task NavParam(string pcName)
+    {
+        ShowLoading();
+        await Task.Delay(500); // Delay to show loading effect
+        NavigationManager.NavigateTo($"pc-history/{pcName}");
+    }
+
+    private void ShowLoading()
+    {
+        showLoading = true;
+        StateHasChanged();
     }
 }

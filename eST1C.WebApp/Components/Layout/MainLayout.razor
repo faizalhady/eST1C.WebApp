@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-<RadzenComponents @rendermode="InteractiveServer" />
+
 
 <Loading IsVisible="@showLoading" /> <!-- Add this line for the loading spinner -->
 
@@ -14,16 +14,12 @@
                 </a>
                 <div class="bb-top-row px-4 d-flex justify-content-end">
 
-                <a href="/history" target="_blank" class="align-self-center ml-3 p-2">History</a>
-                <a href="/settings" target="_blank" class="align-self-center ml-3 p-2">Settings</a>
+                <a href="/history" class="align-self-center ml-3 p-2">History</a>
+                <a href="/settings"  class="align-self-center ml-3 p-2">Settings</a>
+                @* <a href="/test"  class="align-self-center ml-3 p-2">Test</a> *@
                 </div>
             </div>
         </div>
-
-
-
-
-
         <article class="content px-4">
             @Body
         </article>

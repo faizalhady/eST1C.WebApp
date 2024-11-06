@@ -1,0 +1,78 @@
+﻿@page "/pc-history/{PCName}"
+@inject PcHistoryService PcHistoryService
+@using eST1C.WebApp.Data
+@rendermode InteractiveServer
+
+<h3>Migration History for @PCName</h3>
+
+@if (migrationHistory != null && migrationHistory.Any())
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>No</th>
+                <th>From</th>
+                <th>To</th>
+                <th>
+                    <a style="cursor: pointer;" @onclick="() => SortByTimestamp()">
+                        When
+                        @if (sortAscending)
+                        {
+                            <span>▲</span>
+                        }
+                        else
+                        {
+                            <span>▼</span>
+                        }
+                    </a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var history in sortedMigrationHistory)
+            {
+                <tr>
+                    <td>@history.MigrationStep</td>
+                    <td>@history.PreviousWorkcell</td>
+                    <td>@history.Workcell</td>
+                    <td>@history.Timestamp.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No migration history available for this PCName.</p>
+}
+
+@code {
+    [Parameter]
+    public string PCName { get; set; }  // Parameter to receive PCName from URL
+
+    private List<PCMigrationHistory> migrationHistory;
+    private IEnumerable<PCMigrationHistory> sortedMigrationHistory;
+    private bool sortAscending = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(PCName))
+        {
+            migrationHistory = await PcHistoryService.GetAllDataByPCNameAsync(PCName);
+            SortData();
+        }
+    }
+
+    private void SortByTimestamp()
+    {
+        sortAscending = !sortAscending;
+        SortData();
+    }
+
+    private void SortData()
+    {
+        sortedMigrationHistory = sortAscending
+            ? migrationHistory.OrderBy(m => m.Timestamp)
+            : migrationHistory.OrderByDescending(m => m.Timestamp);
+    }
+}
