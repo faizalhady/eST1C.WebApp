@@ -45,7 +45,7 @@ namespace eST1C.WebApp.Service
                 .Select(p => p.Timestamp)
                 .FirstOrDefaultAsync();
         }
-        public async Task<LastUsedLogDTO?> GetLatestLogAsync(string workcell)
+        public async Task<List<LastUsedLogDTO>> GetLastUsedLogsByWorkcellAsync(string workcell)
         {
             return await _context.LastUsed
                 .Where(log => log.Workcell.Contains(workcell)) // Filter by Workcell
@@ -55,7 +55,7 @@ namespace eST1C.WebApp.Service
                     PCName = log.PCName,
                     LastUsed = log.LastUsed
                 })
-                .FirstOrDefaultAsync(); // Get only the latest log entry
+                .ToListAsync(); // Return the entire list of log entries
         }
 
 

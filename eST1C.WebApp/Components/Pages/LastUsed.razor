@@ -1,33 +1,46 @@
 ﻿@page "/smarttorque-last-used/{companyName}"
 @using eST1C.WebApp.Service
 @inject eST1C.WebApp.Service.LogDataService LogDataService
-
+@rendermode InteractiveServer
 
 <h3 class="mb-4">Last Used Workstation <span class="text-primary">@companyName</span></h3>
 <div class="mb-4">
 </div>
 
-<table class="table table-bordered table-hover ">
+<table class="table table-bordered table-hover">
     <thead class="table-light">
         <tr>
+            <th>No</th> <!-- New column for serial number -->
             <th>PC Name / Station</th>
-            <th>Last Used</th>
+            <th @onclick="ToggleSortOrder" style="cursor: pointer;">
+                Last Used
+                @if (isAscending)
+                {
+                    <span>&#9650;</span> <!-- Up arrow for ascending -->
+                }
+                else
+                {
+                    <span>&#9660;</span> <!-- Down arrow for descending -->
+                }
+            </th>
         </tr>
     </thead>
     <tbody>
-        @if (log != null)
+        @if (sortedLogs != null && sortedLogs.Any())
         {
-
-            <tr>
-                <td>@log.PCName</td>
-                <td>@log.LastUsed.ToString("g")</td>
-            </tr>
-
+            @foreach (var (log, index) in sortedLogs.Select((value, i) => (value, i)))
+            {
+                <tr>
+                    <td>@(index + 1)</td> <!-- Display index + 1 as the serial number -->
+                    <td>@log.PCName</td>
+                    <td>@log.LastUsed.ToString("g")</td>
+                </tr>
+            }
         }
         else
         {
             <tr>
-                <td colspan="2">No data available</td>
+                <td colspan="3">No data available</td>
             </tr>
         }
     </tbody>
@@ -37,11 +50,29 @@
     [Parameter]
     public string? companyName { get; set; }
 
-    @* private List<LogDataService.LastUsedLogDTO> log = new List<LogDataService.LastUsedLogDTO>(); *@
-    private LogDataService.LastUsedLogDTO? log;
+    private List<LogDataService.LastUsedLogDTO> logs = new List<LogDataService.LastUsedLogDTO>();
+    private IEnumerable<LogDataService.LastUsedLogDTO> sortedLogs = new List<LogDataService.LastUsedLogDTO>();
+    private bool isAscending = true;
+
     protected override async Task OnInitializedAsync()
     {
-        log = await LogDataService.GetLatestLogAsync(companyName);
+        if (!string.IsNullOrEmpty(companyName))
+        {
+            logs = await LogDataService.GetLastUsedLogsByWorkcellAsync(companyName);
+            SortLogs(); // Initial sort
+        }
+    }
 
+    private void ToggleSortOrder()
+    {
+        isAscending = !isAscending;
+        SortLogs();
+    }
+
+    private void SortLogs()
+    {
+        sortedLogs = isAscending 
+            ? logs.Where(log => log.PCName != null).OrderBy(log => log.LastUsed) 
+            : logs.Where(log => log.PCName != null).OrderByDescending(log => log.LastUsed);
     }
 }
